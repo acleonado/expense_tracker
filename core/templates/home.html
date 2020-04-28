@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div class="container-fluid mt-3">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <button type="button" class="btn mb-1 btn-rounded btn-primary" data-toggle="modal" data-target="#AddAccountModal">
+                            <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
+                            </span>Add Account
+                        </button>                    
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6 col-sm-9">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body pb-0 d-flex justify-content-between">
+                                        <div>
+                                            <h4 class="mb-1">Budget Plan</h4>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Account</th>
+                                                        <th>Type</th>
+                                                        <th>Description</th>
+                                                        <th>Amount</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <th>1</th>
+                                                        <td>Kolor Tea Shirt For Man</td>
+                                                        <td><span class="badge badge-primary px-2">Sale</span>
+                                                        </td>
+                                                        <td>January 22</td>
+                                                        <td class="color-primary">$21.56</td>
+                                                        <td>
+                                                            <span>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>2</th>
+                                                        <td>Kolor Tea Shirt For Women</td>
+                                                        <td><span class="badge badge-danger px-2">Tax</span>
+                                                        </td>
+                                                        <td>January 30</td>
+                                                        <td class="color-success">$55.32</td>
+                                                        <td>
+                                                            <span>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>3</th>
+                                                        <td>Blue Backpack For Baby</td>
+                                                        <td><span class="badge badge-success px-2">Extended</span>
+                                                        </td>
+                                                        <td>January 25</td>
+                                                        <td class="color-danger">$14.85</td>
+                                                        <td>
+                                                            <span>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-sm-3">
+                        <!-- <div class="card card-widget">
+                            <div class="card-body gradient-2">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h2 class="card-widget__title">$ 12,000.32</h2>
+                                        <h5 class="card-widget__subtitle">Total Savings</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        {% for account in object_list %}
+                            <div class="card card-widget">
+                                <div class="card-body label-primary">
+                                    <div class="media">
+                                        <span class="card-widget__icon"><i class="fa fa-credit-card"></i></span>
+                                        <div class="media-body">
+                                            <h2 class="card-widget__title">{{ account.balance }}</h2>
+                                            <h5 class="card-widget__subtitle">{{ account.name }}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <div class="modal fade" id="AddAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Account</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+        
+        
+        
