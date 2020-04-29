@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Quixlab - Bootstrap Admin Dashboard Template by Themefisher.com</title>
+    <title>Expense Tracker</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'core/images/favicon.png' %}">
     <!-- Pignose Calender -->
@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{% static 'core/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css' %}">
     <!-- Custom Stylesheet -->
     <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
+    
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
 
 </head>
 
@@ -110,27 +112,13 @@
             Sidebar start
         ***********************************-->
         <div class="nk-sidebar">           
-            <div class="nk-nav-scroll">
+            <div class="nk-nav-scroll active">
                 <ul class="metismenu" id="menu">
                     <li class="nav-label">Dashboard</li>
                     <li class="mega-menu mega-menu-sm">
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Layouts</span>
+                        <a class="has-arrow" href="{% url 'home' %}" aria-expanded="false">
+                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Expense Tracker</span>
                         </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./layout-blank.html">Blank</a></li>
-                            <li><a href="./layout-one-column.html">One Column</a></li>
-                            <li><a href="./layout-two-column.html">Two column</a></li>
-                            <li><a href="./layout-compact-nav.html">Compact Nav</a></li>
-                            <li><a href="./layout-vertical.html">Vertical</a></li>
-                            <li><a href="./layout-horizontal.html">Horizontal</a></li>
-                            <li><a href="./layout-boxed.html">Boxed</a></li>
-                            <li><a href="./layout-wide.html">Wide</a></li>
-                            
-                            
-                            <li><a href="./layout-fixed-header.html">Fixed Header</a></li>
-                            <li><a href="layout-fixed-sidebar.html">Fixed Sidebar</a></li>
-                        </ul>
                     </li>
                 </ul>
             </div>
@@ -186,9 +174,15 @@
     <script src="{% static 'core/plugins/chartist/js/chartist.min.js' %}"></script>
     <script src="{% static 'core/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js' %}"></script>
 
-
-
     <script src="{% static 'core/js/dashboard/dashboard-1.js' %}"></script>
+
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.datepicker').datepicker();
+    });
+    </script>
 
 </body>
 

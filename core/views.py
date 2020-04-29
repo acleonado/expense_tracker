@@ -1,41 +1,49 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, FormView, CreateView
-from .models import Account
-from .forms import AddAccountForm
+from .models import Account, Transaction
+from .forms import AddAccountForm, AddTransactionForm
 from django.views import View
 from django.urls import reverse
 
 class HomeView(View):
     def get(self, request, *args, **kwargs):
-         view = AccountListView.as_view()
+         view = HomeListView.as_view()
          return view(request, *args, **kwargs) 
 
     def post(self, request, *args, **kwargs):
-         view = AddAccount.as_view()
-         return view(request, *args, **kwargs) 
+        if request.method == 'POST':
+            form_account = AddAccountForm(request.POST)
+            form_transaction = AddTransactionForm(request.POST)
 
-class AccountListView(ListView):
-    model = Account
+            if form_account.is_valid():
+                view = AddAccount.as_view()
+            elif form_transaction.is_valid():
+                view = AddTransaction.as_view()
+
+        return view(request, *args, **kwargs) 
+
+class HomeListView(ListView):
     template_name = 'home.html'
+    context_object_name = 'account_list'
+    queryset = Account.objects.all().order_by('-balance')
 
     def get_context_data(self, **kwargs):
         # This is frequently used to pass all kinds of data to a template. 
         # The template can then render these components accordingly.
-        context = super().get_context_data(**kwargs)
-        context['form'] = AddAccountForm()
+        context = super(HomeListView, self).get_context_data(**kwargs)
+        context['form_account'] = AddAccountForm()
+        context['form_transaction'] = AddTransactionForm()
+        context['trans_list'] = Transaction.objects.all().order_by('-date')
         return context
-
-    def get_queryset(self):
-        return Account.objects.all().order_by('-balance')
 
 class AddAccount(CreateView):
     form_class = AddAccountForm
-    # success_message = "Successfully registered to %(title)s Event"
+    
+    def get_success_url(self):
+        return reverse('home')
 
-    # def get_success_message(self, cleaned_data):
-    #     return self.success_message % dict(
-    #         cleaned_data,
-    #         title=self.object.event_id.title,
-    #     )
+class AddTransaction(CreateView):
+    form_class = AddTransactionForm
+    
     def get_success_url(self):
         return reverse('home')

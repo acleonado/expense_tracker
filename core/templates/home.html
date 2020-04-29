@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags %}   
+       
 
 {% block content %}
 
@@ -12,23 +13,15 @@
 
             <div class="container-fluid mt-3">
                 <div class="row">
-                    <div class="col-lg-3 col-sm-6">
-                        <button type="button" class="btn mb-1 btn-rounded btn-primary" data-toggle="modal" data-target="#AddAccountModal">
-                            <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
-                            </span>Add Account
-                        </button>                    
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
                     <div class="col-6 col-sm-9">
                         <div class="row">
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-body pb-0 d-flex justify-content-between">
-                                        <div>
-                                            <h4 class="mb-1">Budget Plan</h4>
-                                        </div>
+                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddTransactionModal">
+                                            <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
+                                            </span>Add Transaction
+                                        </button>    
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -44,48 +37,27 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <th>1</th>
-                                                        <td>Kolor Tea Shirt For Man</td>
-                                                        <td><span class="badge badge-primary px-2">Sale</span>
-                                                        </td>
-                                                        <td>January 22</td>
-                                                        <td class="color-primary">$21.56</td>
-                                                        <td>
-                                                            <span>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>2</th>
-                                                        <td>Kolor Tea Shirt For Women</td>
-                                                        <td><span class="badge badge-danger px-2">Tax</span>
-                                                        </td>
-                                                        <td>January 30</td>
-                                                        <td class="color-success">$55.32</td>
-                                                        <td>
-                                                            <span>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>3</th>
-                                                        <td>Blue Backpack For Baby</td>
-                                                        <td><span class="badge badge-success px-2">Extended</span>
-                                                        </td>
-                                                        <td>January 25</td>
-                                                        <td class="color-danger">$14.85</td>
-                                                        <td>
-                                                            <span>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
+                                                    {% for trans in trans_list %}
+                                                        <tr>
+                                                            <td>{{ trans.date }}</td>
+                                                            <td>{{ trans.account }}</td>
+                                                            {% if trans.trans_type == 'Income' %}
+                                                                <td><span class="label label-pill label-success">{{ trans.trans_type }}</span></td>
+                                                            {% elif trans.trans_type == 'Expense' %}
+                                                                <td><span class="label label-pill label-danger">{{ trans.trans_type }}</span></td>
+                                                            {% else %}
+                                                                <td><span class="label label-pill label-info">{{ trans.trans_type }}</span></td>
+                                                            {% endif %}
+                                                            <td>{{ trans.desc }}</td>
+                                                            <td class="color-primary">{{ trans.amount }}</td>
+                                                            <td>
+                                                                <span>
+                                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -106,7 +78,16 @@
                                 </div>
                             </div>
                         </div> -->
-                        {% for account in object_list %}
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6">
+                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddAccountModal">
+                                    <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
+                                    </span>Add Account
+                                </button>                    
+                            </div>
+                        </div>
+                        <hr>
+                        {% for account in account_list %}
                             <div class="card card-widget">
                                 <div class="card-body label-primary">
                                     <div class="media">
@@ -139,9 +120,33 @@
                     <div class="modal-body">
                         <form method="POST">
                             {% csrf_token %}
-                            {{ form|crispy }}
+                            {{ form_account|crispy }}
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="AddTransactionModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Transaction</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form_transaction|crispy }}
+                            <!-- {{ form_transaction.media }} -->
+                            {{ form_transaction.media }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
