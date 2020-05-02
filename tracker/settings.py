@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # user apps
     'core',
+    'users',
 
     # third part apps
     'djmoney',
@@ -63,7 +64,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'core/templates'
+            'core/templates',
+            'users/templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -135,3 +137,6 @@ STATICFILES_DIRS = [
 
 CURRENCIES = ('USD')
 CURRENCY_CHOICES = [('USD', 'USD $')]
+
+LOGIN_REDIRECT_URL = 'home'
+# LOGIN_URL = 'login'

@@ -16,9 +16,25 @@
                     <div class="col-6 col-sm-9">
                         <div class="row">
                             <div class="col-12">
+                               
+                                <!-- {% regroup expense by name as country_list %}
+                                    {% for e in country_list %}
+                                        <p>{{ e.grouper }}</p>
+                                        {% for i in e.list %}
+                                            {% if i.transaction__trans_type == 'Expense' %}
+                                                <p>{{ i.balance }} - {{i.sum_expense }}</p>
+                                            {% elif i.transaction__trans_type == 'Income' %}
+                                                <p>{{ i.balance }} + {{ i.sum_expense }}</p>
+                                            {% else %}
+                                                <p>transfer {{ i.sum_expense }}</p>
+                                            {% endif %}
+                                            
+                                        {% endfor %}
+                                    {% endfor %} -->
+
                                 <div class="card">
                                     <div class="card-body pb-0 d-flex justify-content-between">
-                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddTransactionModal">
+                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-id="{{ user.id }}" data-toggle="modal" data-target="#AddTransactionModal">
                                             <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
                                             </span>Add Transaction
                                         </button>    
@@ -100,6 +116,15 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6">
+                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddAccountModal">
+                                    <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
+                                    </span>Add Budget
+                                </button>                    
+                            </div>
+                        </div>
+                        <hr>
                     </div>
                 </div>
             </div>
