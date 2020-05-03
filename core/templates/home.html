@@ -10,8 +10,22 @@
             Content body start
         ***********************************-->
         <div class="content-body">
-
             <div class="container-fluid mt-3">
+                 {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'error' %}
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                {{ message }}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 <div class="row">
                     <div class="col-6 col-sm-9">
                         <div class="row">
@@ -31,51 +45,55 @@
                                             
                                         {% endfor %}
                                     {% endfor %} -->
-
                                 <div class="card">
                                     <div class="card-body pb-0 d-flex justify-content-between">
-                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-id="{{ user.id }}" data-toggle="modal" data-target="#AddTransactionModal">
+                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-id="{{ user.id }}" data-toggle="modal" data-target="#AddAccTransactionModal">
                                             <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
                                             </span>Add Transaction
                                         </button>    
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Date</th>
-                                                        <th>Account</th>
-                                                        <th>Type</th>
-                                                        <th>Description</th>
-                                                        <th>Amount</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for trans in trans_list %}
+                                            {% if not acctrans_list %}
+                                                <p class="text-danger">There were no transactions made yet.</p>
+                                                <hr>
+                                            {% else %}
+                                                <table class="table table-striped">
+                                                    <thead>
                                                         <tr>
-                                                            <td>{{ trans.date }}</td>
-                                                            <td>{{ trans.account }}</td>
-                                                            {% if trans.trans_type == 'Income' %}
-                                                                <td><span class="label label-pill label-success">{{ trans.trans_type }}</span></td>
-                                                            {% elif trans.trans_type == 'Expense' %}
-                                                                <td><span class="label label-pill label-danger">{{ trans.trans_type }}</span></td>
-                                                            {% else %}
-                                                                <td><span class="label label-pill label-info">{{ trans.trans_type }}</span></td>
-                                                            {% endif %}
-                                                            <td>{{ trans.desc }}</td>
-                                                            <td class="color-primary">{{ trans.amount }}</td>
-                                                            <td>
-                                                                <span>
-                                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                    <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
-                                                                </span>
-                                                            </td>
+                                                            <th>Date</th>
+                                                            <th>Account</th>
+                                                            <th>Type</th>
+                                                            <th>Description</th>
+                                                            <th>Amount</th>
+                                                            <th>Action</th>
                                                         </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for trans in acctrans_list %}
+                                                            <tr>
+                                                                <td>{{ trans.date }}</td>
+                                                                <td>{{ trans.account }}</td>
+                                                                {% if trans.trans_type == 'Income' %}
+                                                                    <td><span class="label label-pill label-success">{{ trans.trans_type }}</span></td>
+                                                                {% elif trans.trans_type == 'Expense' %}
+                                                                    <td><span class="label label-pill label-danger">{{ trans.trans_type }}</span></td>
+                                                                {% else %}
+                                                                    <td><span class="label label-pill label-info">{{ trans.trans_type }}</span></td>
+                                                                {% endif %}
+                                                                <td>{{ trans.desc }}</td>
+                                                                <td class="color-primary">{{ trans.amount }}</td>
+                                                                <td>
+                                                                    <span>
+                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -110,7 +128,7 @@
                                         <span class="card-widget__icon"><i class="fa fa-credit-card"></i></span>
                                         <div class="media-body">
                                             <h2 class="card-widget__title">{{ account.balance }}</h2>
-                                            <h5 class="card-widget__subtitle">{{ account.name }}</h5>
+                                            <h5 class="card-widget__subtitle">{{ account.name|capfirst }}</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -118,7 +136,7 @@
                         {% endfor %}
                         <div class="row">
                             <div class="col-lg-3 col-sm-6">
-                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddAccountModal">
+                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddBudgetModal">
                                     <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
                                     </span>Add Budget
                                 </button>                    
@@ -156,7 +174,29 @@
             </div>
         </div>
 
-        <div class="modal fade" id="AddTransactionModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="AddBudgetModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Budget</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form_budget|crispy }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="AddAccTransactionModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
