@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account, Budget, AccountTransaction
+from .models import Account, Budget, AccountTransaction, BudgetTransaction
 from django.forms.widgets import Select
 from functools import partial
 from django.urls import reverse
@@ -7,6 +7,15 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 
 DateInput = partial(forms.DateInput, {'class': 'datepicker'})
+
+TRANS_TYPE_CHOICES = (
+    ('Income', 'Income'), 
+    ('Expense', 'Expense'),
+)
+
+TRANSF_TYPE_CHOICES = (
+    ('Transfer', 'Transfer'), 
+)
 
 class AddAccountForm(forms.ModelForm):
     class Meta:
@@ -20,11 +29,10 @@ class AddAccountForm(forms.ModelForm):
 class AddBudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
-        fields = ['account', 'name', 'balance']
+        fields = ['account', 'name']
         labels = {
             'name': 'Budget Name',
-            'account': 'Account Name',
-            'balance': 'Starting Balance'
+            'account': 'Account Name'
         }
 
     def __init__(self, current_user, *args, **kwargs):
@@ -34,6 +42,7 @@ class AddBudgetForm(forms.ModelForm):
 
 class AddAccountTransactionForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput())
+    trans_type = forms.ChoiceField(choices = TRANS_TYPE_CHOICES)
 
     class Meta:
         model = AccountTransaction
@@ -49,3 +58,44 @@ class AddAccountTransactionForm(forms.ModelForm):
     def __init__(self, current_user, *args, **kwargs):
         super(AddAccountTransactionForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
+
+class MakeTransferForm(forms.ModelForm):
+    date = forms.DateField(widget=DateInput())
+    trans_type = forms.ChoiceField(choices = TRANSF_TYPE_CHOICES)
+
+    class Meta:
+        model = AccountTransaction
+        fields = ['date', 'account', 'budget','trans_type', 'desc', 'amount']
+        labels = {
+            'date': 'Date',
+            'account': 'From (Account)',
+            'budget': 'To (Budget)',
+            'trans_type': 'Transaction Type',
+            'desc': 'Description',
+            'amount': 'Amount'
+        }
+
+    def __init__(self, current_user, *args, **kwargs):
+        super(MakeTransferForm, self).__init__(*args, **kwargs)
+        self.fields['account'].queryset = Account.objects.filter(username=current_user)
+        self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
+        self.fields['trans_type'].widget.attrs['readonly'] = True
+
+class AddBudgetTransactionForm(forms.ModelForm):
+    date = forms.DateField(widget=DateInput())
+
+    class Meta:
+        model = BudgetTransaction
+        fields = ['date', 'budget', 'trans_type', 'desc', 'amount']
+        labels = {
+            'date': 'Date',
+            'budget': 'Budget Name',
+            'trans_type': 'Transaction Type',
+            'desc': 'Description',
+            'amount': 'Amount'
+        }
+    
+    def __init__(self, current_user, *args, **kwargs):
+        super(AddBudgetTransactionForm, self).__init__(*args, **kwargs)
+        self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
+        self.fields['trans_type'].widget.attrs['readonly'] = True

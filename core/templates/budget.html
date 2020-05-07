@@ -3,7 +3,7 @@
 
 {% load crispy_forms_tags %}   
        
-{% block active_acc_plan %} active {% endblock %}
+{% block active_budg_plan %} active {% endblock %}
 {% block content %}
 
         <!--**********************************
@@ -39,7 +39,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
-                                            {% if not acctrans_list %}
+                                            {% if not budgtrans_list %}
                                                 <p class="text-danger">There were no transactions made yet.</p>
                                                 <hr>
                                             {% else %}
@@ -47,7 +47,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Date</th>
-                                                            <th>Account</th>
+                                                            <th>Budget Name</th>
                                                             <th>Type</th>
                                                             <th>Description</th>
                                                             <th>Amount</th>
@@ -55,10 +55,10 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for trans in acctrans_list %}
+                                                        {% for trans in budgtrans_list %}
                                                             <tr>
                                                                 <td>{{ trans.date }}</td>
-                                                                <td>{{ trans.account|capfirst }}</td>
+                                                                <td>{{ trans.budget }}</td>
                                                                 {% if trans.trans_type == 'Income' %}
                                                                     <td><span class="label label-pill label-success">{{ trans.trans_type }}</span></td>
                                                                 {% elif trans.trans_type == 'Expense' %}
@@ -66,57 +66,8 @@
                                                                 {% else %}
                                                                     <td><span class="label label-pill label-info">{{ trans.trans_type }}</span></td>
                                                                 {% endif %}
-                                                                <td>{{ trans.desc|capfirst }}</td>
+                                                                <td>{{ trans.desc }}</td>
                                                                 <td class="color-primary">{{ trans.amount }}</td>
-                                                                <td>
-                                                                    <span>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card">
-                                    <div class="card-body pb-0 d-flex justify-content-between">
-                                        <button type="button" class="btn mb-1 btn-rounded btn-dark" data-id="{{ user.id }}" data-toggle="modal" data-target="#MakeTransferModal">
-                                            <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
-                                            </span>Make a Transfer
-                                        </button>    
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            {% if not transfer_list %}
-                                                <p class="text-danger">There were no tranfers made yet.</p>
-                                                <hr>
-                                            {% else %}
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Date</th>
-                                                            <th>From (Account)</th>
-                                                            <th>To (Budget)</th>
-                                                            <!-- <th>Type</th> -->
-                                                            <th>Description</th>
-                                                            <th>Amount</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {% for transf in transfer_list %}
-                                                            <tr>
-                                                                <td>{{ transf.date }}</td>
-                                                                <td>{{ transf.account|capfirst }}</td>
-                                                                <td>{{ transf.budget|capfirst }}</td>
-                                                                <!-- <td><span class="label label-pill label-primary">{{ transf.trans_type }}</span></td> -->
-                                                                <td>{{ transf.desc|capfirst }}</td>
-                                                                <td class="color-primary">{{ transf.amount }}</td>
                                                                 <td>
                                                                     <span>
                                                                         <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
@@ -148,25 +99,25 @@
                         </div> -->
                         <div class="row">
                             <div class="col-lg-3 col-sm-6">
-                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddAccountModal">
+                                <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddBudgetModal">
                                     <span class="btn-icon-left"><i class="fa fa-plus" style="color: black;"></i> 
-                                    </span>Add Account
+                                    </span>Add Budget
                                 </button>                    
                             </div>
                         </div>
                         <hr>
-                        {% for account in account_list %}
-                            <div class="card card-widget card gradient-1">
+                        {% for budget in budget_list %}
+                            <div class="card card-widget card gradient-2">
                                 <div class="card-body">
                                     <div class="media">
                                         <span class="card-widget__icon"><i class="fa fa-credit-card"></i></span>
                                         <div class="media-body">
-                                            {% if account.total_balance == 0 %}
-                                                <h2 class="card-widget__title">$ {{ account.balance }}</h2>
+                                            {% if budget.total_balance == 0 %}
+                                                <h2 class="card-widget__title">$ {{ budget.budget__balance }}</h2>
                                             {% else %}
-                                                <h2 class="card-widget__title">$ {{ account.total_balance }}</h2>
+                                                <h2 class="card-widget__title">$ {{ budget.total_balance }}</h2>
                                             {% endif %}
-                                            <h5 class="card-widget__subtitle">{{ account.name|capfirst }}</h5>
+                                            <h5 class="card-widget__subtitle">{{ budget.budget__name|capfirst }}</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -181,22 +132,22 @@
             Content body end
         ***********************************-->
 
-        <div class="modal fade" id="AddAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="AddBudgetModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Account</h5>
+                        <h5 class="modal-title">Add Budget</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <form method="POST">
                             {% csrf_token %}
-                            <input type='hidden' name='action' value='btn-acct'> 
-                            {{ form_account|crispy }}
+                            <input type="hidden" value="btn-budg" name="action">
+                            {{ form_budget|crispy }}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-primary" value="Submit">
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -215,36 +166,12 @@
                     <div class="modal-body">
                         <form method="POST">
                             {% csrf_token %}
-                            <input type='hidden' name='action' value='btn-trans'> 
+                            <input type="hidden" value="btn-trans" name="action">
                             {{ form_transaction|crispy }}
                             {{ form_transaction.media }}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-primary" value="Submit">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="MakeTransferModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Make a Transfer</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            <input type='hidden' name='action' value='btn-transf'> 
-                            {{ form_transfer|crispy }}
-                            {{ form_transfer.media }}
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                                <input type="submit" class="btn btn-primary" value="Submit">
+                                <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </form>
                     </div>

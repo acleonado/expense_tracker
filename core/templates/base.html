@@ -98,12 +98,17 @@
             Sidebar start
         ***********************************-->
         <div class="nk-sidebar">           
-            <div class="nk-nav-scroll active">
+            <div class="nk-nav-scroll">
                 <ul class="metismenu" id="menu">
-                    <li class="nav-label">Dashboard</li>
-                    <li class="mega-menu mega-menu-sm">
-                        <a class="has-arrow" href="{% url 'home' %}" aria-expanded="false">
-                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Expense Tracker</span>
+                    <li class="nav-label">Expense Tracker</li>
+                    <li class="mega-menu mega-menu-sm {% block active_acc_plan %} {% endblock %}">
+                        <a href="{% url 'home' %}" aria-expanded="false">
+                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Account Plan</span>
+                        </a>
+                    </li>
+                    <li class="mega-menu mega-menu-sm {% block active_budg_plan %} {% endblock %}">
+                        <a href="{% url 'budget' %}" aria-expanded="false">
+                            <i class="icon-badge menu-icon"></i><span class="nav-text">Budget Plan</span>
                         </a>
                     </li>
                 </ul>
