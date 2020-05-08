@@ -6,7 +6,9 @@ from django.urls import reverse
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 
-DateInput = partial(forms.DateInput, {'class': 'datepicker'})
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 
 TRANS_TYPE_CHOICES = (
     ('Income', 'Income'), 
@@ -41,7 +43,7 @@ class AddBudgetForm(forms.ModelForm):
  
 
 class AddAccountTransactionForm(forms.ModelForm):
-    date = forms.DateField(widget=DateInput())
+    date = forms.DateField(widget=DateInput)
     trans_type = forms.ChoiceField(choices = TRANS_TYPE_CHOICES)
 
     class Meta:
@@ -60,8 +62,8 @@ class AddAccountTransactionForm(forms.ModelForm):
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
 
 class MakeTransferForm(forms.ModelForm):
-    date = forms.DateField(widget=DateInput())
-    trans_type = forms.ChoiceField(choices = TRANSF_TYPE_CHOICES)
+    date = forms.DateField(widget=DateInput)
+    trans_type = forms.ChoiceField(choices = TRANSF_TYPE_CHOICES, label = 'Transaction Type')
 
     class Meta:
         model = AccountTransaction
@@ -70,7 +72,6 @@ class MakeTransferForm(forms.ModelForm):
             'date': 'Date',
             'account': 'From (Account)',
             'budget': 'To (Budget)',
-            'trans_type': 'Transaction Type',
             'desc': 'Description',
             'amount': 'Amount'
         }
@@ -82,7 +83,7 @@ class MakeTransferForm(forms.ModelForm):
         self.fields['trans_type'].widget.attrs['readonly'] = True
 
 class AddBudgetTransactionForm(forms.ModelForm):
-    date = forms.DateField(widget=DateInput())
+    date = forms.DateField(widget=DateInput)
 
     class Meta:
         model = BudgetTransaction

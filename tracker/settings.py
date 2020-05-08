@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     # third part apps
     'djmoney',
     'crispy_forms',
-    'bootstrap_datepicker_plus',
 ]
 
 MIDDLEWARE = [

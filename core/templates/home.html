@@ -217,7 +217,6 @@
                             {% csrf_token %}
                             <input type='hidden' name='action' value='btn-trans'> 
                             {{ form_transaction|crispy }}
-                            {{ form_transaction.media }}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                 <input type="submit" class="btn btn-primary" value="Submit">

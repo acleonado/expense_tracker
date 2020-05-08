@@ -32,7 +32,7 @@ class AccountTransaction(models.Model):
 
 class BudgetTransaction(models.Model):
     date = models.DateField()
-    budget = models.ForeignKey(Budget, on_delete = models.CASCADE)
+    budget = models.ForeignKey(Budget, on_delete = models.CASCADE, related_name= 'budgettransaction')
     trans_type = models.CharField(max_length = 15, default="Expense")
     desc = models.CharField(max_length = 50)
     amount = MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
