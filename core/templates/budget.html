@@ -46,6 +46,7 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
+                                                            <th>ID</th>
                                                             <th>Date</th>
                                                             <th>Budget Name</th>
                                                             <th>Type</th>
@@ -57,6 +58,7 @@
                                                     <tbody>
                                                         {% for trans in budgtrans_list %}
                                                             <tr>
+                                                                <td class="font-weight-bold">{{ trans.id }}</td>
                                                                 <td>{{ trans.date }}</td>
                                                                 <td>{{ trans.budget }}</td>
                                                                 {% if trans.trans_type == 'Income' %}

@@ -130,6 +130,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>Status</th>
+                                                            <th>ID</th>
                                                             <th>Date</th>
                                                             <th>From (Account)</th>
                                                             <th>To (Budget)</th>
@@ -142,6 +143,7 @@
                                                         {% for transf in transfer_list %}
                                                             <tr>
                                                                 <td><i class="fa fa-check gradient-3-text" aria-hidden="true"></i></td>
+                                                                <td class="font-weight-bold">{{ transf.id }}</td>
                                                                 <td>{{ transf.date }}</td>
                                                                 <td>{{ transf.account|capfirst }}</td>
                                                                 <td>{{ transf.budget|capfirst }}</td>

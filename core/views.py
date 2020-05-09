@@ -131,8 +131,8 @@ class BudgetListView(ListView):
         context = super(BudgetListView, self).get_context_data(**kwargs)
         context['form_budget'] = AddBudgetForm(current_user = self.request.user)
         context['form_transaction'] = AddBudgetTransactionForm(current_user = self.request.user)
-        transfer_balance = AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer').values('budget__name', 'trans_type').annotate(total = Sum('amount'))
-        budget_expenses = BudgetTransaction.objects.filter(budget__account__username = self.request.user).values('budget', 'budget__name', 'budget__balance').annotate(total_expenses = Sum('amount'))
+        transfer_balance = AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer').values('budget__id', 'budget__name', 'trans_type').annotate(total = Sum('amount'))
+        budget_expenses = BudgetTransaction.objects.filter(budget__account__username = self.request.user).values('budget__id', 'budget__name', 'budget__balance').annotate(total_expenses = Sum('amount'))
         budgets = Budget.objects.filter(account__username = self.request.user).values('id','name', 'balance').order_by('name')
 
         budget_list = []
@@ -141,10 +141,10 @@ class BudgetListView(ListView):
             for b in budget_expenses:
                 for t in transfer_balance:
                     total = 0
-                    if BudgetTransaction.objects.filter(budget__account__username = self.request.user, budget = budget.get('id')).exists():
-                         # if the budget name exists in the budget transaction table, execute if statement
-                        if t.get('budget__name') == budget.get('name') and b.get('budget__name') == budget.get('name'):
-                            # if all budget names are equal to the budget name from the budget table, execute operations
+                    if BudgetTransaction.objects.filter(budget__account__username = self.request.user, budget = t.get('budget__id')).exists():
+                         # if the budget name exists in the budget transaction and account transaction table, execute if statement
+                        if t.get('budget__name') == budget.get('name') and b.get('budget__name') == t.get('budget__name'):
+                            # if all budget names are equal to the budget name of budget transaction and account transaction table, execute operations
                             i = i + t.get('total') - b.get('total_expenses')
                     else:
                         if AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = budget.get('id')).exists():
@@ -153,6 +153,13 @@ class BudgetListView(ListView):
                                 # if the budget name is equal to the budget name from the account transaction, then 
                                 # add the balance to the total transfered amount from account transaction table
                                 total = budget.get('balance') + t.get('total')
+                        elif BudgetTransaction.objects.filter(budget__account__username = self.request.user, budget = b.get('budget__id')).exists():
+                            # if budget name does not exists in account transaction table but exists in budget transaction table, execute if statement
+                            if b.get('budget__name') == budget.get('name'):
+                                # if the budget name is equal to the budget name from the budget transaction, then 
+                                # subtract the budget balance to the total expenses from the budget transaction table. (This will result to a negative number)
+                                print(t.get('budget__name'))
+                                i = i - b.get('total_expenses')
 
                     total+=i
                     budget['total_balance'] = total 
