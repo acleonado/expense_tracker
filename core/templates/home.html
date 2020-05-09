@@ -46,6 +46,7 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
+                                                            <th>ID</th>
                                                             <th>Date</th>
                                                             <th>Account</th>
                                                             <th>Type</th>
@@ -57,6 +58,7 @@
                                                     <tbody>
                                                         {% for trans in acctrans_list %}
                                                             <tr>
+                                                                <td class="font-weight-bold">{{ trans.id }}</td>
                                                                 <td>{{ trans.date }}</td>
                                                                 <td>{{ trans.account|capfirst }}</td>
                                                                 {% if trans.trans_type == 'Income' %}
@@ -71,7 +73,9 @@
                                                                 <td>
                                                                     <span>
                                                                         <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                                        <a href="javascript:void()" type="button" data-toggle="modal" data-target="#deleteAccountTransactionModal" data-id="{{ trans.id }}">
+                                                                            <i class="fa fa-close color-danger"></i>
+                                                                        </a>
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -81,6 +85,32 @@
                                             {% endif %}
                                         </div>
                                     </div>
+                                    {% if is_paginated %}
+                                        <div class="bootstrap-pagination">
+                                            <nav>
+                                                <ul class="pagination justify-content-center">
+                                                    {% if page_obj.has_previous %}
+                                                        <li class="page-item"><a class="page-link" href="?page=1" aria-label="Previous"><span aria-hidden="true">&laquo;</span> <span class="sr-only">Previous</span></a>
+                                                        <li class="page-item disabled"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Previous</a>
+                                                        </li>
+                                                    {% endif %}
+
+                                                    {% for num in page_obj.paginator.page_range %}
+                                                        {% if page_obj.number == num %}
+                                                            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'+3' %}
+                                                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if page_obj.has_next %}
+                                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                                                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }" aria-label="Next"><span aria-hidden="true">&raquo;</span> <span class="sr-only">Next</span></a></li>
+                                                    {% endif %}
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    {% endif %}
                                 </div>
 
                                 <div class="card">
@@ -99,10 +129,10 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
+                                                            <th>Status</th>
                                                             <th>Date</th>
                                                             <th>From (Account)</th>
                                                             <th>To (Budget)</th>
-                                                            <!-- <th>Type</th> -->
                                                             <th>Description</th>
                                                             <th>Amount</th>
                                                             <th>Action</th>
@@ -111,16 +141,16 @@
                                                     <tbody>
                                                         {% for transf in transfer_list %}
                                                             <tr>
+                                                                <td><i class="fa fa-check gradient-3-text" aria-hidden="true"></i></td>
                                                                 <td>{{ transf.date }}</td>
                                                                 <td>{{ transf.account|capfirst }}</td>
                                                                 <td>{{ transf.budget|capfirst }}</td>
-                                                                <!-- <td><span class="label label-pill label-primary">{{ transf.trans_type }}</span></td> -->
                                                                 <td>{{ transf.desc|capfirst }}</td>
                                                                 <td class="color-primary">{{ transf.amount }}</td>
                                                                 <td>
                                                                     <span>
                                                                         <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-close color-danger"></i></a>
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -136,16 +166,6 @@
                     </div>
 
                     <div class="col-6 col-sm-3">
-                        <!-- <div class="card card-widget">
-                            <div class="card-body gradient-2">
-                                <div class="media">
-                                    <div class="media-body">
-                                        <h2 class="card-widget__title">$ 12,000.32</h2>
-                                        <h5 class="card-widget__subtitle">Total Savings</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                         <div class="row">
                             <div class="col-lg-3 col-sm-6">
                                 <button type="button" class="btn mb-1 btn-rounded btn-dark" data-toggle="modal" data-target="#AddAccountModal">
@@ -158,18 +178,22 @@
                         {% for account in account_list %}
                             <div class="card card-widget card gradient-1">
                                 <div class="card-body">
+                                    <button type="button" class="close" data-toggle="modal" data-target="#deleteAccountModal" data-id="{{ account.id }}" data-name="{{ account.name }}">
+                                        <span aria-hidden="true" class="opacity-5"><i class="ti-trash"></i></span>
+                                    </button>
                                     <div class="media">
-                                        <span class="card-widget__icon"><i class="fa fa-credit-card"></i></span>
+                                        <span class="card-widget__icon opacity-5"><i class="fa fa-credit-card"></i></span>
                                         <div class="media-body">
                                             {% if account.total_balance == 0 %}
                                                 <h2 class="card-widget__title">$ {{ account.balance }}</h2>
                                             {% else %}
                                                 <h2 class="card-widget__title">$ {{ account.total_balance }}</h2>
                                             {% endif %}
-                                            <h5 class="card-widget__subtitle">{{ account.name|capfirst }}</h5>
+                                            <h5 class="card-widget__subtitle">{{ account.name|title }}</h5>
                                         </div>
                                     </div>
                                 </div>
+                                <button type="button" class="btn btn-light btn-xs">Edit Account<span class="btn-icon-right"><i class="icon-note menu-icon"></i></span></button>
                             </div>
                         {% endfor %}
                     </div>
@@ -179,6 +203,11 @@
         </div>
         <!--**********************************
             Content body end
+        ***********************************-->
+
+
+        <!--**********************************
+            Modals
         ***********************************-->
 
         <div class="modal fade" id="AddAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -240,7 +269,6 @@
                             {% csrf_token %}
                             <input type='hidden' name='action' value='btn-transf'> 
                             {{ form_transfer|crispy }}
-                            {{ form_transfer.media }}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                                 <input type="submit" class="btn btn-primary" value="Submit">
@@ -250,6 +278,52 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="deleteAccountModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" class="form-control account-id" value="{{ account.id }}" name="name">
+                        <input type='hidden' name='action' value='btn-acct-del'> 
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteAccountTransactionModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" class="form-control acct-trans-id" value="{{ trans.id }}" name="id">
+                        <input type='hidden' name='action' value='btn-acct-trans-del'> 
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!--**********************************
+            End of Modals
+        ***********************************-->
 {% endblock %}
         
         

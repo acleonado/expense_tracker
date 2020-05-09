@@ -1,5 +1,5 @@
-from django.shortcuts import redirect, render
-from django.views.generic import ListView, DetailView, FormView, CreateView, FormView
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import ListView, DetailView, FormView, CreateView, DeleteView
 from .models import Account, AccountTransaction, Budget, BudgetTransaction
 from .forms import AddAccountForm, AddBudgetForm, AddAccountTransactionForm, AddBudgetTransactionForm, MakeTransferForm
 from django.views import View
@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.functions import Coalesce
 from decimal import Decimal
+from django.core.paginator import Paginator
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -19,7 +20,7 @@ class HomeView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         action = self.request.POST['action']
 
-        if (action == 'btn-acct'):
+        if action == 'btn-acct':
             account_form = AddAccountForm(request.POST)
             if account_form.is_valid():
                 name = account_form.cleaned_data.get('name')
@@ -28,28 +29,31 @@ class HomeView(LoginRequiredMixin, View):
                     return redirect(reverse('home'))
                 else:
                     view = AddAccount.as_view()
-                
-        elif (action == 'btn-trans'):
+        elif action == 'btn-trans':
             transaction_form = AddAccountTransactionForm(self.request.user, request.POST)
             if transaction_form.is_valid():
                 view = AddAccountTransaction.as_view()
-        elif(action == 'btn-transf'):
+        elif action == 'btn-transf':
             tranfer_form = MakeTransferForm(self.request.user, request.POST)
             if tranfer_form.is_valid():
                 view = MakeTransfer.as_view()
-                
+        elif action == 'btn-acct-del':
+            view = AccountDeleteView.as_view()
+        elif action == 'btn-acct-trans-del':
+            view = AccountTransactionDeleteView.as_view()
+
         return view(request, *args, **kwargs) 
 
 
 class HomeListView(ListView):
     template_name = 'home.html'
     context_object_name = 'acctrans_list'
+    paginate_by = 15
     
     def get_queryset(self):
         return AccountTransaction.objects.filter(account__username = self.request.user).exclude(trans_type = 'Transfer').order_by('-date')
      
     def get_context_data(self, **kwargs):
-        
         # This is frequently used to pass all kinds of data to a template. 
         # The template can then render these components accordingly.
         context = super(HomeListView, self).get_context_data(**kwargs)
@@ -57,7 +61,8 @@ class HomeListView(ListView):
         context['form_transaction'] = AddAccountTransactionForm(current_user = self.request.user)
         context['form_transfer'] = MakeTransferForm(current_user = self.request.user)
         context['transfer_list'] = AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer').order_by('-date')
-        accounts = Account.objects.filter(username = self.request.user).values('name' ,'balance').order_by('name')
+
+        accounts = Account.objects.filter(username = self.request.user).values('id', 'name' ,'balance').order_by('name')
         total_balance = Account.objects.filter(username = self.request.user).values('name', 'accounttransaction__trans_type').annotate(total = Sum('accounttransaction__amount'))
         
         account_list = []
@@ -94,7 +99,7 @@ class BudgetView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         action = self.request.POST['action']
 
-        if (action == 'btn-budg'):
+        if action == 'btn-budg':
             budget_form = AddBudgetForm(self.request.user, request.POST)
             if budget_form.is_valid():
                 name = budget_form.cleaned_data.get('name')
@@ -104,17 +109,17 @@ class BudgetView(LoginRequiredMixin, View):
                 else:
                     view = AddBudget.as_view()
                 
-        elif (action == 'btn-trans'):
+        elif action == 'btn-trans':
             transaction_form = AddBudgetTransactionForm(self.request.user, request.POST)
             if transaction_form.is_valid():
-
                 view = AddBudgetTransaction.as_view()
-                
+
         return view(request, *args, **kwargs) 
 
 class BudgetListView(ListView):
     template_name = 'budget.html'
     context_object_name = 'budgtrans_list'
+    paginate_by = 20
     
     def get_queryset(self):
         return BudgetTransaction.objects.filter(budget__account__username = self.request.user).order_by('-date')
@@ -166,12 +171,34 @@ class AddAccount(CreateView):
     def get_success_url(self):  
         return reverse('home')
 
+class AccountDeleteView(DeleteView):
+    model = Account
+
+    def get_object(self):
+        id_ = self.request.POST.get('name')
+        return get_object_or_404(Account, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Account Successfully Deleted!")
+        return reverse('home')
+
 class AddAccountTransaction(CreateView):
     model = AccountTransaction
     fields = ['date', 'account', 'trans_type', 'desc', 'amount']
-
+    
     def get_success_url(self):  
-        return reverse('home')       
+        return reverse('home') 
+
+class AccountTransactionDeleteView(DeleteView):
+    model = AccountTransaction
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(AccountTransaction, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Account Transaction Successfully Deleted!")
+        return reverse('home')      
 
 class MakeTransfer(CreateView):
     model = AccountTransaction

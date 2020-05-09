@@ -28,6 +28,10 @@ class AddAccountForm(forms.ModelForm):
             'balance': 'Starting Balance'
         }
 
+    def __init__(self, *args, **kwargs):
+        super(AddAccountForm, self).__init__(*args, **kwargs)
+        self.fields['balance'].widget.attrs['min'] = 1
+
 class AddBudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
@@ -60,6 +64,7 @@ class AddAccountTransactionForm(forms.ModelForm):
     def __init__(self, current_user, *args, **kwargs):
         super(AddAccountTransactionForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
+        self.fields['amount'].widget.attrs['min'] = 1
 
 class MakeTransferForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput)
@@ -80,6 +85,7 @@ class MakeTransferForm(forms.ModelForm):
         super(MakeTransferForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
         self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
+        self.fields['amount'].widget.attrs['min'] = 1
         self.fields['trans_type'].widget.attrs['readonly'] = True
 
 class AddBudgetTransactionForm(forms.ModelForm):
@@ -100,3 +106,4 @@ class AddBudgetTransactionForm(forms.ModelForm):
         super(AddBudgetTransactionForm, self).__init__(*args, **kwargs)
         self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
         self.fields['trans_type'].widget.attrs['readonly'] = True
+        self.fields['amount'].widget.attrs['min'] = 1
