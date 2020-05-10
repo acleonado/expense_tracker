@@ -41,6 +41,8 @@ class HomeView(LoginRequiredMixin, View):
             view = AccountDeleteView.as_view()
         elif action == 'btn-acct-trans-del':
             view = AccountTransactionDeleteView.as_view()
+        elif action == 'btn-make-transf-del':
+            view = TransferDeleteView.as_view()
 
         return view(request, *args, **kwargs) 
 
@@ -144,7 +146,8 @@ class BudgetListView(ListView):
                     if BudgetTransaction.objects.filter(budget__account__username = self.request.user, budget = t.get('budget__id')).exists():
                          # if the budget name exists in the budget transaction and account transaction table, execute if statement
                         if t.get('budget__name') == budget.get('name') and b.get('budget__name') == t.get('budget__name'):
-                            # if all budget names are equal to the budget name of budget transaction and account transaction table, execute operations
+                            # if all budget names are equal to the budget name of budget transaction and account transaction table, then
+                            # add the default balance to the total amount transfered and subtract the total expenses from budget transaction table
                             i = i + t.get('total') - b.get('total_expenses')
                     else:
                         if AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = budget.get('id')).exists():
@@ -157,8 +160,8 @@ class BudgetListView(ListView):
                             # if budget name does not exists in account transaction table but exists in budget transaction table, execute if statement
                             if b.get('budget__name') == budget.get('name'):
                                 # if the budget name is equal to the budget name from the budget transaction, then 
-                                # subtract the budget balance to the total expenses from the budget transaction table. (This will result to a negative number)
-                                print(t.get('budget__name'))
+                                # subtract the budget balance to the total expenses from the budget transaction table. 
+                                # this will result to a negative amount bec the default balance is $0 and no amount is transfered yet to this budget account
                                 i = i - b.get('total_expenses')
 
                     total+=i
@@ -213,6 +216,17 @@ class MakeTransfer(CreateView):
 
     def get_success_url(self):  
         return reverse('home') 
+
+class TransferDeleteView(DeleteView):
+    model = AccountTransaction
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(AccountTransaction, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Transfer Successfully Cancelled!")
+        return reverse('home')    
 
 class AddBudget(CreateView):
     model = Budget
