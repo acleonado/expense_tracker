@@ -121,11 +121,21 @@ class BudgetView(LoginRequiredMixin, View):
                     return redirect(reverse('budget'))
                 else:
                     view = AddBudget.as_view()
-                
         elif action == 'btn-trans':
             transaction_form = AddBudgetTransactionForm(self.request.user, request.POST)
             if transaction_form.is_valid():
                 view = AddBudgetTransaction.as_view()
+        elif action == 'btn-edit-budget':
+            budget_form = AddBudgetForm(self.request.user, request.POST)
+            if budget_form.is_valid():
+                name = budget_form.cleaned_data.get('name')
+                if Budget.objects.filter(name=name, account__username=self.request.user).exists():
+                    messages.error(request, f"The budget name you entered already exists.")
+                    return redirect(reverse('budget'))
+                else:
+                    view = EditBudget.as_view()
+        elif action == 'btn-budget-del':
+            view = BudgetDelete.as_view()    
 
         return view(request, *args, **kwargs) 
 
@@ -146,7 +156,7 @@ class BudgetListView(ListView):
         context['form_transaction'] = AddBudgetTransactionForm(current_user = self.request.user)
         transfer_balance = AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer').values('budget__id', 'budget__name', 'trans_type').annotate(total = Sum('amount'))
         budget_expenses = BudgetTransaction.objects.filter(budget__account__username = self.request.user).values('budget__id', 'budget__name', 'budget__balance').annotate(total_expenses = Sum('amount'))
-        budgets = Budget.objects.filter(account__username = self.request.user).values('id','name', 'balance').order_by('name')
+        budgets = Budget.objects.filter(account__username = self.request.user).values('id','name', 'account', 'balance').order_by('name')
 
         budget_list = []
         for budget in budgets:
@@ -256,6 +266,29 @@ class AddBudget(CreateView):
     fields = ['name', 'account']
 
     def get_success_url(self):  
+        return reverse('budget')
+
+class EditBudget(UpdateView):
+    model = Budget
+    fields = ['name', 'account']
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(Budget, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Budget Successfully Updated!")
+        return reverse('budget')
+
+class BudgetDelete(DeleteView):
+    model = Budget
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(Budget, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Budget Successfully Deleted!")
         return reverse('budget')
 
 class AddBudgetTransaction(CreateView):

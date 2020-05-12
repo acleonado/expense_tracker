@@ -46,6 +46,8 @@ class AddBudgetForm(forms.ModelForm):
     def __init__(self, current_user, *args, **kwargs):
         super(AddBudgetForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
+        self.fields['account'].widget.attrs['class'] = 'budget-account'
+        self.fields['name'].widget.attrs['class'] = 'budget-name'
 
 class AddAccountTransactionForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput)

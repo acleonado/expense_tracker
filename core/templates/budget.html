@@ -127,6 +127,9 @@
                         {% for budget in budget_list %}
                             <div class="card card-widget card gradient-2">
                                 <div class="card-body">
+                                    <button type="button" class="close" data-toggle="modal" data-target="#deleteBudgetModal" data-id="{{ budget.id }}" data-name="{{ budget.name }}">
+                                        <span aria-hidden="true" class="opacity-5"><i class="ti-trash"></i></span>
+                                    </button>
                                     <div class="media">
                                         <span class="card-widget__icon"><i class="fa fa-money"></i></span>
                                         <div class="media-body">
@@ -139,6 +142,9 @@
                                         </div>
                                     </div>
                                 </div>
+                                <button type="button" class="btn btn-light btn-xs" data-toggle="modal" data-target="#editBudgetModal" data-id="{{ budget.id }}" data-name="{{ budget.name }}" data-account="{{ budget.account }}">Edit Budget
+                                    <span class="btn-icon-right"><i class="icon-note menu-icon"></i></span>
+                                </button>
                             </div>
                         {% endfor %}
                     </div>
@@ -192,6 +198,51 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editBudgetModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Budget</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" class="form-control budget-id" name="id">
+                            <input type='hidden' name='action' value='btn-edit-budget'> 
+                            {{ form_budget|crispy }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deleteBudgetModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" class="form-control budget-id" name="id">
+                        <input type='hidden' name='action' value='btn-budget-del'> 
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -28,6 +28,7 @@
             modal.find('.make-transf-id').val(id)
             modal.find('.modal-body').text('Are you sure you want to cancel Transfer Transaction # ' + id + '?')
     })
+    
 
     
 })(jQuery);
@@ -44,4 +45,26 @@ $(function () {
             modal.find('.account-name').val(name)
             modal.find('.account-balance').val(balance)
     })
+
+    $('#editBudgetModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+        var name = button.data('name')
+        var account = button.data('account')
+        
+        var modal = $(this)
+            modal.find('.budget-id').val(id)
+            modal.find('.budget-name').val(name)
+            modal.find('.budget-account').val(account)
+    })
+
+    $('#deleteBudgetModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+        var name = button.data('name')
+
+        var modal = $(this)
+            modal.find('.budget-id').val(id)
+            modal.find('.modal-body').text('Are you sure you want to delete your ' + name + ' Budget?')
+        })
 });
