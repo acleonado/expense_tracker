@@ -188,16 +188,14 @@
                                     <div class="media">
                                         <span class="card-widget__icon opacity-5"><i class="fa fa-credit-card"></i></span>
                                         <div class="media-body">
-                                            {% if account.total_balance == 0 %}
-                                                <h2 class="card-widget__title">$ {{ account.balance }}</h2>
-                                            {% else %}
-                                                <h2 class="card-widget__title">$ {{ account.total_balance }}</h2>
-                                            {% endif %}
+                                            <h2 class="card-widget__title">$ {{ account.total_balance }}</h2>
                                             <h5 class="card-widget__subtitle">{{ account.name|title }}</h5>
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-light btn-xs">Edit Account<span class="btn-icon-right"><i class="icon-note menu-icon"></i></span></button>
+                                <button type="button" class="btn btn-light btn-xs" data-toggle="modal" data-target="#editAccountModal" data-id="{{ account.id }}" data-balance="{{ account.balance }}" data-name="{{ account.name }}">Edit Account
+                                    <span class="btn-icon-right"><i class="icon-note menu-icon"></i></span>
+                                </button>
                             </div>
                         {% endfor %}
                     </div>
@@ -226,6 +224,30 @@
                         <form method="POST">
                             {% csrf_token %}
                             <input type='hidden' name='action' value='btn-acct'> 
+                            {{ form_account|crispy }}
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Submit">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Account</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" class="form-control account-id" name="id">
+                            <input type='hidden' name='action' value='btn-edit-acct'> 
                             {{ form_account|crispy }}
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>

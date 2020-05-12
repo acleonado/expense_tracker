@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import ListView, DetailView, FormView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, FormView, CreateView, DeleteView, UpdateView
 from .models import Account, AccountTransaction, Budget, BudgetTransaction
 from .forms import AddAccountForm, AddBudgetForm, AddAccountTransactionForm, AddBudgetTransactionForm, MakeTransferForm
 from django.views import View
@@ -29,6 +29,10 @@ class HomeView(LoginRequiredMixin, View):
                     return redirect(reverse('home'))
                 else:
                     view = AddAccount.as_view()
+        elif action == 'btn-edit-acct':
+            account_form = AddAccountForm(request.POST)
+            if account_form.is_valid():
+                view = EditAccount.as_view()
         elif action == 'btn-trans':
             transaction_form = AddAccountTransactionForm(self.request.user, request.POST)
             if transaction_form.is_valid():
@@ -43,6 +47,7 @@ class HomeView(LoginRequiredMixin, View):
             view = AccountTransactionDeleteView.as_view()
         elif action == 'btn-make-transf-del':
             view = TransferDeleteView.as_view()
+            
 
         return view(request, *args, **kwargs) 
 
@@ -190,6 +195,18 @@ class AccountDeleteView(DeleteView):
 
     def get_success_url(self):
         messages.success(self.request, f"Account Successfully Deleted!")
+        return reverse('home')
+
+class EditAccount(UpdateView):
+    model = Account
+    fields = ['name', 'balance']
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(Account, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Account Successfully Updated!")
         return reverse('home')
 
 class AddAccountTransaction(CreateView):

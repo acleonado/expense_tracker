@@ -31,6 +31,8 @@ class AddAccountForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AddAccountForm, self).__init__(*args, **kwargs)
         self.fields['balance'].widget.attrs['min'] = 1
+        self.fields['name'].widget.attrs['class'] = 'account-name'
+        self.fields['balance'].widget.attrs['class'] = 'account-balance'
 
 class AddBudgetForm(forms.ModelForm):
     class Meta:
@@ -44,7 +46,6 @@ class AddBudgetForm(forms.ModelForm):
     def __init__(self, current_user, *args, **kwargs):
         super(AddBudgetForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
- 
 
 class AddAccountTransactionForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput)
