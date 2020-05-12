@@ -72,7 +72,7 @@
                                                                 <td class="color-primary">{{ trans.amount }}</td>
                                                                 <td>
                                                                     <span>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                        <a href="{% url 'transaction-detail' trans.id %}"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
                                                                         <a href="javascript:void()" type="button" data-toggle="modal" data-target="#deleteAccountTransactionModal" data-id="{{ trans.id }}">
                                                                             <i class="fa fa-close color-danger"></i>
                                                                         </a>
@@ -151,7 +151,7 @@
                                                                 <td class="color-primary">{{ transf.amount }}</td>
                                                                 <td>
                                                                     <span>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i></a>
+                                                                        <a href="{% url 'transfer-detail' transf.id %}"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
                                                                         <a href="javascript:void()" type="button" data-toggle="modal" data-id="{{ transf.id }}" data-target="#cancelTransferModal">
                                                                             <i class="fa fa-close color-danger"></i>
                                                                         </a>

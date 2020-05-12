@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.functions import Coalesce
 from decimal import Decimal
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -32,7 +33,12 @@ class HomeView(LoginRequiredMixin, View):
         elif action == 'btn-edit-acct':
             account_form = AddAccountForm(request.POST)
             if account_form.is_valid():
-                view = EditAccount.as_view()
+                name = account_form.cleaned_data.get('name')
+                if Account.objects.filter(name=name, username=self.request.user).exists():
+                    messages.error(request, f"The account name you entered already exists.")
+                    return redirect(reverse('home'))
+                else:
+                    view = EditAccount.as_view()
         elif action == 'btn-trans':
             transaction_form = AddAccountTransactionForm(self.request.user, request.POST)
             if transaction_form.is_valid():
@@ -258,3 +264,31 @@ class AddBudgetTransaction(CreateView):
     
     def get_success_url(self):
         return reverse('budget')
+
+class TransactionDetailView(UpdateView):
+    model = AccountTransaction
+    form_class = AddAccountTransactionForm
+    template_name = 'transaction_detail.html'
+     
+    def get_form_kwargs(self):
+        kwargs = super(TransactionDetailView, self).get_form_kwargs()
+        kwargs.update({'current_user': self.request.user})
+        return kwargs
+    
+    def get_success_url(self):
+        messages.success(self.request, f"Transaction Successfully Updated!")
+        return reverse('home')
+
+class TransferDetailView(UpdateView):
+    model = AccountTransaction
+    form_class = MakeTransferForm
+    template_name = 'transfer_detail.html'
+     
+    def get_form_kwargs(self):
+        kwargs = super(TransferDetailView, self).get_form_kwargs()
+        kwargs.update({'current_user': self.request.user})
+        return kwargs
+    
+    def get_success_url(self):
+        messages.success(self.request, f"Transfer Successfully Updated!")
+        return reverse('home')

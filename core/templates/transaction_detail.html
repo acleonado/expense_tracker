@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}   
+       
+{% block active_acc_plan %} active {% endblock %}
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+
+    <div class="row page-titles mx-0">
+        <div class="col p-md-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">Edit Transaction</a></li>
+            </ol>
+        </div>
+    </div>
+    <!-- row -->
+
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-validation">
+                            <form class="form-valide" method="POST">
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                <div class="form-group row">
+                                    <div class="col-lg-12 ml-auto">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #/ container -->
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+
+{% endblock %}

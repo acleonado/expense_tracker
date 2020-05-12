@@ -49,7 +49,7 @@ class AddBudgetForm(forms.ModelForm):
 
 class AddAccountTransactionForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput)
-    trans_type = forms.ChoiceField(choices = TRANS_TYPE_CHOICES)
+    trans_type = forms.ChoiceField(choices = TRANS_TYPE_CHOICES, label = 'Transaction Type')
 
     class Meta:
         model = AccountTransaction
@@ -57,7 +57,6 @@ class AddAccountTransactionForm(forms.ModelForm):
         labels = {
             'date': 'Date',
             'account': 'Account',
-            'trans_type': 'Transaction Type',
             'desc': 'Description',
             'amount': 'Amount'
         }
@@ -66,6 +65,7 @@ class AddAccountTransactionForm(forms.ModelForm):
         super(AddAccountTransactionForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
         self.fields['amount'].widget.attrs['min'] = 1
+        # self.fields['amount'].widget.attrs['class'] = 'form-control'
 
 class MakeTransferForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput)
