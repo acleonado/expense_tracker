@@ -37,16 +37,13 @@ class AddAccountForm(forms.ModelForm):
 class AddBudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
-        fields = ['account', 'name']
+        fields = ['name']
         labels = {
             'name': 'Budget Name',
-            'account': 'Account Name'
         }
 
     def __init__(self, current_user, *args, **kwargs):
         super(AddBudgetForm, self).__init__(*args, **kwargs)
-        self.fields['account'].queryset = Account.objects.filter(username=current_user)
-        self.fields['account'].widget.attrs['class'] = 'budget-account'
         self.fields['name'].widget.attrs['class'] = 'budget-name'
 
 class AddAccountTransactionForm(forms.ModelForm):
@@ -87,7 +84,7 @@ class MakeTransferForm(forms.ModelForm):
     def __init__(self, current_user, *args, **kwargs):
         super(MakeTransferForm, self).__init__(*args, **kwargs)
         self.fields['account'].queryset = Account.objects.filter(username=current_user)
-        self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
+        self.fields['budget'].queryset = Budget.objects.filter(username=current_user)
         self.fields['amount'].widget.attrs['min'] = 1
         self.fields['trans_type'].widget.attrs['readonly'] = True
 
@@ -107,6 +104,6 @@ class AddBudgetTransactionForm(forms.ModelForm):
     
     def __init__(self, current_user, *args, **kwargs):
         super(AddBudgetTransactionForm, self).__init__(*args, **kwargs)
-        self.fields['budget'].queryset = Budget.objects.filter(account__username=current_user)
+        self.fields['budget'].queryset = Budget.objects.filter(username=current_user)
         self.fields['trans_type'].widget.attrs['readonly'] = True
         self.fields['amount'].widget.attrs['min'] = 1

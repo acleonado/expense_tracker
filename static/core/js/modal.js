@@ -50,12 +50,10 @@ $(function () {
         var button = $(event.relatedTarget)
         var id = button.data('id')
         var name = button.data('name')
-        var account = button.data('account')
         
         var modal = $(this)
             modal.find('.budget-id').val(id)
             modal.find('.budget-name').val(name)
-            modal.find('.budget-account').val(account)
     })
 
     $('#deleteBudgetModal').on('show.bs.modal', function (event) {

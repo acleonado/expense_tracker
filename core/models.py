@@ -14,8 +14,8 @@ class Account(models.Model):
 class Budget(models.Model):
     name = models.CharField(max_length = 25)
     balance = MoneyField(max_digits=14, decimal_places=2, default_currency='USD', default = '0.00')
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-
+    username = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     def __str__(self):
         return str(self.name)
 

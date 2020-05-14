@@ -133,16 +133,12 @@
                                     <div class="media">
                                         <span class="card-widget__icon"><i class="fa fa-money"></i></span>
                                         <div class="media-body">
-                                            {% if budget.total_balance == 0 %}
-                                                <h2 class="card-widget__title">$ {{ budget.balance }}</h2>
-                                            {% else %}
-                                                <h2 class="card-widget__title">$ {{ budget.total_balance }}</h2>
-                                            {% endif %}
+                                            <h2 class="card-widget__title">$ {{ budget.total_balance }}</h2>
                                             <h5 class="card-widget__subtitle">{{ budget.name|capfirst }}</h5>
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-light btn-xs" data-toggle="modal" data-target="#editBudgetModal" data-id="{{ budget.id }}" data-name="{{ budget.name }}" data-account="{{ budget.account }}">Edit Budget
+                                <button type="button" class="btn btn-light btn-xs" data-toggle="modal" data-target="#editBudgetModal" data-id="{{ budget.id }}" data-name="{{ budget.name }}">Edit Budget
                                     <span class="btn-icon-right"><i class="icon-note menu-icon"></i></span>
                                 </button>
                             </div>
