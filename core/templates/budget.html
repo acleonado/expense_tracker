@@ -72,8 +72,10 @@
                                                                 <td class="color-primary">{{ trans.amount }}</td>
                                                                 <td>
                                                                     <span>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
-                                                                        <a href="#" data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                                                        <a href="{% url 'budget-detail' trans.id %}"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                                                        <a href="javascript:void()" type="button" data-toggle="modal" data-id="{{ trans.id }}" data-target="#cancelBudgetTransactionModal">
+                                                                            <i class="fa fa-close color-danger"></i>
+                                                                        </a>
                                                                     </span>
                                                                 </td>
                                                             </tr>
@@ -234,6 +236,27 @@
                         {% csrf_token %}
                         <input type="hidden" class="form-control budget-id" name="id">
                         <input type='hidden' name='action' value='btn-budget-del'> 
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="cancelBudgetTransactionModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirmation</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" class="form-control budg-trans-id" name="id">
+                        <input type='hidden' name='action' value='btn-budg-trans-del'> 
                         <div class="modal-body"></div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-danger">Delete</button>

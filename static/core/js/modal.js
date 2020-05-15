@@ -1,4 +1,3 @@
-
 (function($) {
     $('#deleteAccountModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget)
@@ -65,4 +64,13 @@ $(function () {
             modal.find('.budget-id').val(id)
             modal.find('.modal-body').text('Are you sure you want to delete your ' + name + ' Budget?')
         })
+    
+    $('#cancelBudgetTransactionModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+
+        var modal = $(this)
+            modal.find('.budg-trans-id').val(id)
+            modal.find('.modal-body').text('Are you sure you want to delete Budget Transaction # ' + id + '?')
+    })
 });

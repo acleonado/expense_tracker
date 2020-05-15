@@ -136,6 +136,8 @@ class BudgetView(LoginRequiredMixin, View):
                     view = EditBudget.as_view()
         elif action == 'btn-budget-del':
             view = BudgetDelete.as_view()    
+        elif action == 'btn-budg-trans-del':
+            view  = BudgetTransactionDelete.as_view()
 
         return view(request, *args, **kwargs) 
 
@@ -160,7 +162,6 @@ class BudgetListView(ListView):
         
         budget_list = []
         for budget in budgets:
-            total = 0
             # if there is no transaction in the budget transaction
             if not budget_expenses:
                 # then the total will just be the default balance which is $0
@@ -172,31 +173,57 @@ class BudgetListView(ListView):
                     if not transfer_balance:
                         if b.get('budget__name') == budget.get('name'):
                             # then the total will be balance - the total expenses which will result to a negative number
-                            total = budget.get('balance') - b.get('total_expenses')
+                            total = i - b.get('total_expenses')
                     else:
+                        total = 0
                         # if account transaction is not empty, excecute below
                         for t in transfer_balance:
-                            if BudgetTransaction.objects.filter(budget__username = self.request.user, budget = t.get('budget__id')).exists():
-                                # if the budget name exists in the budget transaction and account transaction table, execute if statement
-                                if t.get('budget__name') == budget.get('name') and b.get('budget__name') == t.get('budget__name'):
-                                    # if all budget names are equal to the budget name of budget transaction and account transaction table, then
-                                    # add the default balance to the total amount transfered and subtract the total expenses from budget transaction table
-                                    i = i + t.get('total') - b.get('total_expenses')
-                            else:
-                                if AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = budget.get('id')).exists():
-                                    # if budget name does not exist in budget transaction but exists in account transaction, execute if statement
-                                    if t.get('budget__name') == budget.get('name'):
+                            if AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = t.get('budget__id')).exists():
+                                # if budget name does not exist in budget transaction but exists in account transaction, execute if statement
+                                if t.get('budget__name') == budget.get('name'):
                                         # if the budget name is equal to the budget name from the account transaction, then 
                                         # add the balance to the total transfered amount from account transaction table
-                                        total = budget.get('balance') + t.get('total')
-                                elif BudgetTransaction.objects.filter(budget__username = self.request.user, budget = b.get('budget__id')).exists():
-                                    # if budget name does not exists in account transaction table but exists in budget transaction table, execute if statement
-                                    if b.get('budget__name') == budget.get('name'):
-                                        # if the budget name is equal to the budget name from the budget transaction, then 
-                                        # subtract the budget balance to the total expenses from the budget transaction table. 
-                                        # this will result to a negative amount bec the default balance is $0 and no amount is transfered yet to this budget account
-                                        i = i - b.get('total_expenses')
-                    total+=i
+                                    total = i + t.get('total')
+                            if BudgetTransaction.objects.filter(budget__username = self.request.user, budget = t.get('budget__id') & b.get('budget__id')).exists():
+                                # if the budget name exists in the budget transaction and account transaction table, execute if statement
+                                
+                                if t.get('budget__name') == budget.get('name') and b.get('budget__name') == t.get('budget__name'):
+                                        # if all budget names are equal to the budget name of budget transaction and account transaction table, then
+                                        # add the default balance to the total amount transfered and subtract the total expenses from budget transaction table
+                                    i = i + t.get('total') - b.get('total_expenses')
+
+                            elif BudgetTransaction.objects.filter(budget__username = self.request.user, budget = b.get('budget__id')).exists():
+                                if b.get('budget__name') == budget.get('name'):
+                                    # if the budget name is equal to the budget name from the budget transaction, then 
+                                    # subtract the budget balance to the total expenses from the budget transaction table. 
+                                    # this will result to a negative amount bec the default balance is $0 and no amount is transfered yet to this budget account
+                                    i = i - b.get('total_expenses')
+
+                            # elif AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = t.get('budget__id')).exists():
+                            #     # if budget name does not exist in budget transaction but exists in account transaction, execute if statement
+                            #     if t.get('budget__name') == budget.get('name'):
+                            #             # if the budget name is equal to the budget name from the account transaction, then 
+                            #             # add the balance to the total transfered amount from account transaction table
+                            #         total = i + t.get('total')
+                    
+
+                            # elif BudgetTransaction.objects.filter(budget__username = self.request.user, budget = b.get('budget__id')).exists():
+                            #     # if budget name does not exists in account transaction table but exists in budget transaction table, execute if statement
+                            #     if b.get('budget__name') == budget.get('name'):
+                            #         print(b.get('budget__name'), budget.get('name'))
+                            #         # if the budget name is equal to the budget name from the budget transaction, then 
+                            #         # subtract the budget balance to the total expenses from the budget transaction table. 
+                            #         # this will result to a negative amount bec the default balance is $0 and no amount is transfered yet to this budget account
+                            #         i = i - b.get('total_expenses')
+                            # else:
+                            #     if AccountTransaction.objects.filter(account__username = self.request.user, trans_type = 'Transfer', budget = t.get('budget__id')).exists():
+                            #         # if budget name does not exist in budget transaction but exists in account transaction, execute if statement
+                            #         if t.get('budget__name') == budget.get('name'):
+                            #             # if the budget name is equal to the budget name from the account transaction, then 
+                            #             # add the balance to the total transfered amount from account transaction table
+                            #             total = i + t.get('total')
+                                
+                total+=i
             budget['total_balance'] = total 
             budget_list.append(budget)
         context['budget_list'] = budget_list     
@@ -306,6 +333,17 @@ class BudgetDelete(DeleteView):
         messages.success(self.request, f"Budget Successfully Deleted!")
         return reverse('budget')
 
+class BudgetTransactionDelete(DeleteView):
+    model = BudgetTransaction
+
+    def get_object(self):
+        id_ = self.request.POST.get('id')
+        return get_object_or_404(BudgetTransaction, id=id_)
+
+    def get_success_url(self):
+        messages.success(self.request, f"Budget Transaction Successfully Deleted!")
+        return reverse('budget')
+
 class AddBudgetTransaction(CreateView):
     model = BudgetTransaction
     fields = '__all__'
@@ -341,3 +379,18 @@ class TransferDetailView(UpdateView):
     def get_success_url(self):
         messages.success(self.request, f"Transfer Successfully Updated!")
         return reverse('home')
+
+class BudgetTransactionDetailView(UpdateView):
+    model = BudgetTransaction
+    form_class = AddBudgetTransactionForm
+    template_name = 'budget_detail.html'
+    
+    # Passes a parameter to the form_class
+    def get_form_kwargs(self):
+        kwargs = super(BudgetTransactionDetailView, self).get_form_kwargs()
+        kwargs.update({'current_user': self.request.user})
+        return kwargs
+    
+    def get_success_url(self):
+        messages.success(self.request, f"Budget Transaction Successfully Updated!")
+        return reverse('budget')
